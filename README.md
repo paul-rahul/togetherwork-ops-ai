@@ -95,7 +95,7 @@ Work through the plan file in order from **Step 17** / **18** remaining items, t
 |------|--------|--------|
 | **17** | **Knowledge base page** | Remaining: coverage bars / scores, Generate → Claude (`KB_ARTICLE_*` prompts), persistence into `generatedArticles[gap.id]`, coverage +5% per category cap 100. **Current:** article browser + documentation gap list are implemented. |
 | **18** | **Managed services page** | Remaining: 30-day health bars, Monday pulse, and any remaining plan polish. **Current:** metrics strip, task queue, status filters, exceptions, and Run workflow simulation are implemented. |
-| **19** | **Analytics** | Plan “Analytics page” refinements; much of the live analytics work may already live in `AnalyticsPage.jsx` — diff against plan § Step 19 and JD feature list. |
+| **19** | **Analytics** | Plan “Analytics page” refinements; much of the live analytics work may already live in `AnalyticsPage.jsx` — diff against plan § Step 19 and its feature list. |
 | **Post–19** | **Polish** | No stray hex in components, no unhandled rejections, console clean (keys, etc.). |
 
 Optional plan extras not strictly gated to a single step: **Monday.com** row on Implementations (plan feature list § Page 2 item 11) — add when aligning all pages to the “full feature list” in the plan overview.
