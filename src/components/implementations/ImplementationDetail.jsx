@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ClipboardCheck, Loader2 } from "lucide-react";
+import OfflineBadge from "../shared/OfflineBadge.jsx";
 
 function severityBlockerClass(severity) {
   if (severity === "high") return "border-[var(--red)] bg-[var(--routing-escalate-bg)]";
@@ -28,6 +29,7 @@ function normalizePayload(raw) {
     blockers,
     configDoc: String(raw.configDoc ?? ""),
     nextAction: String(raw.nextAction ?? ""),
+    offline: Boolean(raw.offline),
   };
 }
 
@@ -102,6 +104,7 @@ export default function ImplementationDetail({
 
   return (
     <div className="space-y-4 border-t border-[var(--gray-100)] bg-[var(--border-light)] px-4 py-4 font-sans text-[13px] text-[var(--text-secondary)]">
+      {normalized.offline ? <OfflineBadge /> : null}
       {normalized.nextAction ? (
         <div className="rounded-md border border-[var(--churn-banner-border)] bg-[var(--churn-banner-bg)] px-3 py-2 text-[var(--text-primary)]">
           <span className="font-mono text-[11px] uppercase tracking-wide text-[var(--amber)]">

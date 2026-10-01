@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
+import OfflineBadge from "../shared/OfflineBadge.jsx";
 
 export default function ResponseDraft({
   response,
@@ -42,6 +43,7 @@ export default function ResponseDraft({
         <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-faint)]">
           Response draft
         </p>
+        {response.offline ? <OfflineBadge /> : null}
         <button
           type="button"
           onClick={() => (editing ? finishEdit() : beginEdit())}

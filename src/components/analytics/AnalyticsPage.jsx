@@ -14,11 +14,12 @@ function countGeneratedArticles(generatedArticles) {
 
 function implAiChecklistCount(implementations, implChecklists) {
   const ids = new Set();
+  // Offline samples are rule-based, not AI output, so they are not counted.
   for (const i of implementations ?? []) {
-    if (i?.aiChecklist != null) ids.add(i.id);
+    if (i?.aiChecklist != null && !i.aiChecklist.offline) ids.add(i.id);
   }
   for (const id of Object.keys(implChecklists ?? {})) {
-    if (implChecklists[id] != null) ids.add(id);
+    if (implChecklists[id] != null && !implChecklists[id].offline) ids.add(id);
   }
   return ids.size;
 }
@@ -34,7 +35,10 @@ export default function AnalyticsPage({
   savingsRates,
   hoursBaseline,
 }) {
-  const analysedIds = useMemo(() => Object.keys(analyses ?? {}), [analyses]);
+  const analysedIds = useMemo(
+    () => Object.keys(analyses ?? {}).filter((id) => !analyses[id]?.offline),
+    [analyses],
+  );
   const analysedN = analysedIds.length;
 
   const totalAiActions = useMemo(() => {
