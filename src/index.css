@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  button:active {
+    transform: scale(0.98);
+  }
+}
+
+html {
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  max-height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:root {
+  /* Core (Step 14 palette) */
+  --navy: #0f1f3d;
+  --blue: #1a56db;
+  --lightblue: #ebf5ff;
+  --bg: #f9fafb;
+  --white: #ffffff;
+
+  /* Status */
+  --green: #0e9f6e;
+  --amber: #d97706;
+  --orange: #ea580c;
+  --red: #e02424;
+  --gray: #94a3b8;
+
+  /* Analysis panel (routing / churn) */
+  --routing-auto-bg: #ecfdf5;
+  --routing-escalate-bg: #fff5f5;
+  --routing-escalate-border: #fecaca;
+  --churn-banner-bg: #fffbeb;
+  --churn-banner-border: #fcd34d;
+
+  /* Nav */
+  --nav-hover: #1e3a5f;
+  --nav-inactive: #94a3b8;
+
+  /* Vertical brand colours */
+  --camp-bg: #dbeafe;
+  --camp-text: #1e40af;
+  --assoc-bg: #ede9fe;
+  --assoc-text: #5b21b6;
+  --np-bg: #ccfbf1;
+  --np-text: #0f766e;
+  --pet-bg: #fef3c7;
+  --pet-text: #92400e;
+  --gym-bg: #ffedd5;
+  --gym-text: #c2410c;
+
+  /* Borders */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --gray-100: #f3f4f6;
+  /* Stage track (future step) */
+  --stage-future: #e2e8f0;
+
+  /* Text */
+  --text-primary: #0f1f3d;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+}
+
+body {
+  font-family: "DM Sans", system-ui, sans-serif;
+  background-color: var(--bg);
+  margin: 0;
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes tw-pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.tw-live-dot {
+  animation: tw-pulse-dot 2s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.analysis-result {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 25%,
+    var(--border) 50%,
+    var(--border-light) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
