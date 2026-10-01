@@ -28,7 +28,7 @@ Resolution (see the proxy work): Claude calls move behind a server-side Cloudfla
 - `package-lock.json` was out of sync with `package.json` (`@emnapi/*`), so `npm ci` failed on a clean clone. Regenerated.
 - The footer and top bar use Togetherwork's name and a "TW" mark. A public deployment needs an explicit statement that this is an independent prototype with synthetic data.
 - `KnowledgeBasePage.jsx` shows internal copy ("Step 17 preview").
-- `docs/TW_Support_AI_Implementation_Plan.md` is an agent build spec that references a job description and an interview demo. It is not suitable to link from a public portfolio page.
+- `docs/TW_Support_AI_Implementation_Plan.md` is the original agent build spec for the browser-key prototype. Its API-key and footer notes are superseded by `docs/DEPLOYMENT.md`.
 - Top bar says "Claude Sonnet 4.6 · Live" unconditionally, even without a working key.
 
 ## Baseline
