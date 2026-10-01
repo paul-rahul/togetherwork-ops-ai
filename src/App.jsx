@@ -21,13 +21,14 @@ import { hoursBaseline, savingsRates, weeklyTicketHistory } from "./data/analyti
 import { callClaude, canDegrade, fetchAiStatus } from "./utils/claudeApi.js";
 import { parseModelJson } from "./utils/parseModelJson.js";
 import { sampleImplementation, sampleResponse, sampleTriage } from "./utils/offlineSamples.js";
+import { usePage } from "./utils/router.js";
 
 function clone(data) {
   return structuredClone(data);
 }
 
 export default function App() {
-  const [activePage, setActivePage] = useState("support");
+  const [activePage, setActivePage] = usePage();
   // null until the server answers; false when no AI key is configured there.
   const [aiAvailable, setAiAvailable] = useState(null);
   useEffect(() => {
@@ -280,7 +281,7 @@ export default function App() {
     setTasks(clone(mockTasks));
     setImplementations(clone(mockImplementations));
     setArticles(clone(initialArticles));
-  }, []);
+  }, [setActivePage]);
 
   const supportProps = {
     tickets,
