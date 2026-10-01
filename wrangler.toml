@@ -1,0 +1,8 @@
+name = "togetherwork-ops-ai"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "./dist"
+
+# Secrets are never stored here. Set the Anthropic key on the Pages project:
+#   npx wrangler@4 pages secret put ANTHROPIC_API_KEY --project-name togetherwork-ops-ai
+# Optional plain-text variables (AI_ENABLED, RATE_LIMIT_PER_IP, RATE_LIMIT_GLOBAL, ALLOWED_ORIGINS)
+# are described in docs/DEPLOYMENT.md and can be set in the Pages dashboard.
