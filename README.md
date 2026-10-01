@@ -1,6 +1,8 @@
 # Togetherwork Operations Intelligence
 
-Prototype web app for **Togetherwork Support / Operations AI** (support triage, implementations PSA, knowledge gaps, managed automation, cross-page analytics). Claude is called **from the browser** via the Anthropic API (no backend).
+Independent prototype web app for **Support / Operations AI** (support triage, implementations PSA, knowledge gaps, managed automation, cross-page analytics). It is not affiliated with or endorsed by Togetherwork, and all data is synthetic. Claude is called through a **server-side Cloudflare Pages Function** (`functions/api/claude.js`); the browser never holds an API key.
+
+Public deployment: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) (secure proxy, cost protection, Cloudflare steps), [`docs/DEPLOYMENT_AUDIT.md`](docs/DEPLOYMENT_AUDIT.md) (what is implemented) and [`docs/DEPLOYMENT_QA.md`](docs/DEPLOYMENT_QA.md).
 
 **Authoritative build spec:** [`docs/TW_Support_AI_Implementation_Plan.md`](docs/TW_Support_AI_Implementation_Plan.md) — follow steps **in order** when extending the app.
 
@@ -10,15 +12,20 @@ Prototype web app for **Togetherwork Support / Operations AI** (support triage, 
 
 ```bash
 cd togetherwork-ops-ai
-npm install
-# Create .env in this folder with: VITE_CLAUDE_API_KEY=sk-ant-...
+npm ci
+cp .env.example .env     # add ANTHROPIC_API_KEY (optional; see below)
 npm run dev
 ```
 
 **Environment**
 
-- Create `.env` in `togetherwork-ops-ai/` with `VITE_CLAUDE_API_KEY=…` (Vite exposes only `VITE_*` variables to the client). Do not commit real keys; `.gitignore` should list `.env`.
-- Requests use model **`claude-sonnet-4-6`** and header **`anthropic-dangerous-direct-browser-access`** (see `src/utils/claudeApi.js`).
+- `ANTHROPIC_API_KEY` in `.env` is a **server-side** secret read by the dev middleware and the Pages Function. It has no `VITE_` prefix and is never bundled into browser code. Do not commit real keys; `.env` is gitignored.
+- Without a key the app still runs: AI panels show rule-based samples labelled "Offline sample · AI unavailable".
+- The browser calls `POST /api/claude` with `{ operation, payload }` (`src/utils/claudeApi.js`); prompts and the model (`claude-sonnet-4-6`) are held server-side in `functions/_lib/`.
+
+**Routes**
+
+`/support`, `/implementations`, `/knowledge`, `/managed-services`, `/analytics` (`/` redirects to `/support`).
 
 **Fonts**
 
@@ -28,6 +35,7 @@ npm run dev
 
 - Colours: **CSS variables** in `src/index.css` (`:root`). Avoid raw hex in component files; use `var(--…)` tokens.
 - Prompts return **JSON only**; parse Claude output via the resilient **`parseModelJson()`** helper after `callClaude()` returns text (handles fenced / wrapped JSON).
+- The knowledge-base and managed-services pages, and some analytics refinements, are partially implemented (see below). Analytics "hours saved" is modeled from assumed rates, not measured.
 
 ---
 
@@ -87,7 +95,7 @@ Work through the plan file in order from **Step 17** / **18** remaining items, t
 |------|--------|--------|
 | **17** | **Knowledge base page** | Remaining: coverage bars / scores, Generate → Claude (`KB_ARTICLE_*` prompts), persistence into `generatedArticles[gap.id]`, coverage +5% per category cap 100. **Current:** article browser + documentation gap list are implemented. |
 | **18** | **Managed services page** | Remaining: 30-day health bars, Monday pulse, and any remaining plan polish. **Current:** metrics strip, task queue, status filters, exceptions, and Run workflow simulation are implemented. |
-| **19** | **Analytics** | Plan “Analytics page” refinements; much of the live analytics work may already live in `AnalyticsPage.jsx` — diff against plan § Step 19 and JD feature list. |
+| **19** | **Analytics** | Plan “Analytics page” refinements; much of the live analytics work may already live in `AnalyticsPage.jsx` — diff against plan § Step 19 and its feature list. |
 | **Post–19** | **Polish** | No stray hex in components, no unhandled rejections, console clean (keys, etc.). |
 
 Optional plan extras not strictly gated to a single step: **Monday.com** row on Implementations (plan feature list § Page 2 item 11) — add when aligning all pages to the “full feature list” in the plan overview.
@@ -104,7 +112,8 @@ Optional plan extras not strictly gated to a single step: **Monday.com** row on 
 | Implementations | `src/components/implementations/ImplementationsPage.jsx`, `ImplementationDetail.jsx` |
 | Knowledge / Managed / Analytics | `src/components/knowledge/KnowledgeBasePage.jsx`, `src/components/managed/ManagedServicesPage.jsx`, `src/components/analytics/AnalyticsPage.jsx` |
 | Data | `src/data/*.js` |
-| Claude / utilities | `src/utils/claudeApi.js`, `src/utils/prompts.js`, `src/utils/parseModelJson.js`, `src/utils/articleLinks.js` |
+| Claude (browser) | `src/utils/claudeApi.js`, `src/utils/parseModelJson.js`, `src/utils/offlineSamples.js`, `src/utils/router.js`, `src/utils/articleLinks.js` |
+| Claude (server) | `functions/api/claude.js`, `functions/api/claude/status.js`, `functions/_lib/claude.js`, `functions/_lib/prompts.js` |
 | Demo seeding | `scripts/seed-mock-tickets.mjs` |
 
 ---
@@ -118,6 +127,9 @@ Optional plan extras not strictly gated to a single step: **Monday.com** row on 
 | `npm run lint` | Run ESLint |
 | `npm run preview` | Preview production build |
 | `npm run seed:tickets` | Regenerate `src/data/mockTickets.js` (353 tickets; keeps first 10 handcrafted) |
+| `npm run test:proxy` | Test the server-side Claude proxy against a mock Anthropic API |
+| `npm run pages:dev` | Build, then run the real Cloudflare Pages runtime locally |
+| `npm run deploy` | Build and deploy `dist/` to the Pages project (needs Cloudflare login) |
 
 ---
 

@@ -8,7 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed:tickets": "node scripts/seed-mock-tickets.mjs"
+    "seed:tickets": "node scripts/seed-mock-tickets.mjs",
+    "test:proxy": "node --test scripts/test-claude-proxy.mjs",
+    "pages:dev": "npm run build && npx --yes wrangler@4 pages dev dist",
+    "deploy": "npm run build && npx --yes wrangler@4 pages deploy dist --project-name togetherwork-ops-ai"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",

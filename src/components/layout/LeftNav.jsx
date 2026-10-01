@@ -1,3 +1,5 @@
+import { PAGE_PATHS } from "../../utils/router.js";
+
 const sections = [
   { header: "Customer Support", page: "support", label: "Support inbox", badgeKey: "openTickets" },
   { header: "Professional Services", page: "implementations", label: "Implementations", badgeKey: "atRisk" },
@@ -28,9 +30,15 @@ export default function LeftNav({ activePage, setActivePage, badges }) {
             <p className="mb-2.5 px-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-faint)]">
               {header}
             </p>
-            <button
-              type="button"
-              onClick={() => setActivePage(page)}
+            <a
+              href={PAGE_PATHS[page]}
+              aria-current={isActive ? "page" : undefined}
+              onClick={(event) => {
+                // Let modified clicks (new tab/window) use the real link.
+                if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                setActivePage(page);
+              }}
               className={`flex w-full items-center justify-between gap-2 rounded-md px-2 py-2.5 text-left font-sans text-[13px] transition-colors active:scale-[0.98] ${
                 isActive
                   ? "bg-[var(--blue)] text-[var(--white)]"
@@ -49,7 +57,7 @@ export default function LeftNav({ activePage, setActivePage, badges }) {
                   {count}
                 </span>
               ) : null}
-            </button>
+            </a>
           </div>
         );
       })}

@@ -5,21 +5,21 @@
 
 ## Overview
 
-Build a working web app prototype — **Togetherwork Operations Intelligence** — that demonstrates AI and automation across all four work streams called out in the job description: customer support, professional services (implementations), knowledge management, and managed services automation.
+Build a working web app prototype — **Togetherwork Operations Intelligence** — that demonstrates AI and automation across four operational work streams plus cross-cutting analytics: customer support, professional services (implementations), knowledge management, and managed services automation.
 
-The app has five pages connected by a left-side navigation. Each page maps directly to a section of the JD. All Claude API calls are made directly from the browser. No backend or database required.
+The app has five pages connected by a left-side navigation. Each page maps to one work stream. In the original build all Claude API calls are made directly from the browser; the public deployment moves them behind a server-side function (see `docs/DEPLOYMENT.md`). No database is required.
 
 ---
 
-## JD-to-feature mapping
+## Project context
 
-| JD work stream | App page | Key JD quote |
+| Work stream | App page | What the page explores |
 |---|---|---|
-| Customer Support | Support inbox | "Connect Claude to Zendesk to auto-answer tickets, build AI ticket triage and routing, sentiment detection" |
-| Professional Services | Implementations tracker | "Analyze onboarding workflows, build AI-driven implementation workflows, automate data migrations, configs, and documentation generation, integrate AI into PSA/PMO tools e.g. Monday.com" |
-| Knowledge and Docs | Knowledge base | "Build AI-powered help centers from documentation and tickets, auto-generate help articles and identify documentation gaps" |
-| Managed Services | Automation tasks | "Reduce repeated payroll processing work, build automation for billing, tax, donations and workflows, build integration between Claude and Monday.com" |
-| Cross-cutting | Analytics | "Driving measurable customer outcomes — efficiency, CSAT, cost reduction" |
+| Customer Support | Support inbox | AI ticket triage and routing, sentiment detection, drafted replies |
+| Professional Services | Implementations tracker | Onboarding workflow analysis, AI-generated checklists and configuration documentation, a PSA-style tracker |
+| Knowledge and Docs | Knowledge base | Documentation-gap detection from ticket volume, AI-drafted help articles |
+| Managed Services | Automation tasks | Automating repeated billing, payroll, tax and donation workflows |
+| Cross-cutting | Analytics | Deflection, sentiment and category mix, and modeled efficiency metrics |
 
 ---
 
@@ -1311,7 +1311,7 @@ Follow these design rules precisely to make the app look polished:
 4. KB article generation: clicking Generate on a gap triggers a Claude call only if `generatedArticles[gap.id]` is empty.
 5. Test all 5 pages in sequence. Verify that actions on one page visibly update the Analytics page stats.
 6. The Reset demo button must clear: `analyses`, `responses`, `implChecklists`, `generatedArticles`, reset all ticket statuses to "open", reset all task statuses to original mock values, and navigate to the Support page.
-7. Run through the full demo flow before the interview: open a ticket → approve it → check analytics updated → generate a KB article → check coverage score updated → expand an implementation → view the checklist.
+7. Run through the full demo flow before demoing: open a ticket → approve it → check analytics updated → generate a KB article → check coverage score updated → expand an implementation → view the checklist.
 8. No unhandled promise rejections or missing React key warnings in the browser console.
 
 ---
@@ -1451,7 +1451,7 @@ Right — Top ticket categories horizontal bars. Tally `category` values from th
 
 ## API key setup note for the demo
 
-For the interview demo, the API key is passed via the `.env` file locally. The app should include a visible but unobtrusive note in the UI footer: "Demo mode · Powered by Claude Sonnet 4 · Togetherwork Support Intelligence Prototype"
+For the demo, the API key is passed via the `.env` file locally. The app should include a visible but unobtrusive note in the UI footer: "Demo mode · Powered by Claude Sonnet 4 · Togetherwork Support Intelligence Prototype"
 
 Do NOT hardcode the API key anywhere in the source files.
 
@@ -1697,4 +1697,4 @@ The app is complete when:
 - [ ] Reset demo button clears all Claude-generated state across all pages
 - [ ] Left nav badges update as tickets are resolved and exceptions are addressed
 - [ ] No console errors or unhandled rejections during a full demo walkthrough
-- [ ] App is visually polished enough to run as a live demo in a 30-minute interview
+- [ ] App is visually polished enough to run to run as a 30-minute live demo

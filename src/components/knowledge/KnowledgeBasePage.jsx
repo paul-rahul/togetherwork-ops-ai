@@ -46,8 +46,8 @@ export default function KnowledgeBasePage({ articles, generatedArticles }) {
       <header className="mb-6">
         <h1 className="text-base font-medium">Knowledge base</h1>
         <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[var(--text-muted)]">
-          Published articles, documentation gaps from support volume, and AI-generated drafts linked to gaps (Step 17
-          preview).
+          Published articles and documentation gaps surfaced from support volume. AI-drafted articles for each gap are
+          planned, not yet built.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <div className="rounded-lg border border-[var(--gray-100)] bg-[var(--white)] px-4 py-3">
