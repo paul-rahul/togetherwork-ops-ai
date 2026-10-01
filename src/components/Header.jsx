@@ -14,13 +14,6 @@ export default function Header({ activeTab, setActiveTab }) {
         </span>
       </div>
       <div className="flex shrink-0 items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span
-            className="tw-live-dot h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--green)]"
-            aria-hidden
-          />
-          <span className="font-mono text-[11px] text-[var(--text-muted)]">Claude Sonnet 4.6 · Live</span>
-        </div>
         <div
           className="flex rounded-md p-0.5"
           style={{ borderWidth: "0.5px", borderColor: "var(--border)", borderStyle: "solid" }}
