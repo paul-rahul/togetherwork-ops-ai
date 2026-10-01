@@ -18,4 +18,11 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // Server-side code: Cloudflare Pages Functions, Vite config, scripts.
+    files: ['functions/**/*.js', 'vite.config.js', 'scripts/**/*.{js,mjs}'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.serviceworker },
+    },
+  },
 ])

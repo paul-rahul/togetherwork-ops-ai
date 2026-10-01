@@ -6,7 +6,6 @@
 // Status colours: green=auto-resolved, amber=analysing/warning, red=escalated/churn, gray=open.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ApiKeyWarning from "./components/shared/ApiKeyWarning.jsx";
 import Topbar from "./components/layout/Topbar.jsx";
 import LeftNav from "./components/layout/LeftNav.jsx";
 import SupportPage from "./components/support/SupportPage.jsx";
@@ -19,30 +18,27 @@ import mockImplementations from "./data/mockImplementations.js";
 import mockTasks from "./data/mockTasks.js";
 import initialArticles from "./data/knowledgeBase.js";
 import { hoursBaseline, savingsRates, weeklyTicketHistory } from "./data/analyticsHistory.js";
-import { callClaude } from "./utils/claudeApi.js";
+import { callClaude, canDegrade, fetchAiStatus } from "./utils/claudeApi.js";
 import { parseModelJson } from "./utils/parseModelJson.js";
-import {
-  TRIAGE_SYSTEM_PROMPT,
-  buildTriageUserMessage,
-  RESPONSE_SYSTEM_PROMPT,
-  buildResponseUserMessage,
-  IMPL_SYSTEM_PROMPT,
-  buildImplUserMessage,
-} from "./utils/prompts.js";
+import { sampleImplementation, sampleResponse, sampleTriage } from "./utils/offlineSamples.js";
 
 function clone(data) {
   return structuredClone(data);
 }
 
-function hasValidApiKey() {
-  const k = import.meta.env.VITE_CLAUDE_API_KEY;
-  return Boolean(k && String(k).trim() !== "" && k !== "your_api_key_here");
-}
-
-const HAS_API_KEY = hasValidApiKey();
-
 export default function App() {
   const [activePage, setActivePage] = useState("support");
+  // null until the server answers; false when no AI key is configured there.
+  const [aiAvailable, setAiAvailable] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    void fetchAiStatus().then((ok) => {
+      if (!cancelled) setAiAvailable(ok);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [tickets, setTickets] = useState(() => clone(mockTickets));
   const ticketsRef = useRef(tickets);
@@ -101,27 +97,33 @@ export default function App() {
     });
 
     try {
-      const triageText = await callClaude(
-        TRIAGE_SYSTEM_PROMPT,
-        buildTriageUserMessage(ticket, articlesRef.current),
-      );
+      const articleRefs = articlesRef.current.map(({ title, category }) => ({ title, category }));
       let analysis;
       try {
-        analysis = parseModelJson(triageText);
-      } catch {
-        throw new Error("Could not parse triage response as JSON.");
+        const triageText = await callClaude("triage", { ticket, articles: articleRefs });
+        try {
+          analysis = parseModelJson(triageText);
+        } catch {
+          throw new Error("Could not parse triage response as JSON.");
+        }
+      } catch (err) {
+        if (!canDegrade(err)) throw err;
+        analysis = sampleTriage(ticket, articleRefs);
       }
       setAnalyses((prev) => ({ ...prev, [ticketId]: analysis }));
 
-      const responseText = await callClaude(
-        RESPONSE_SYSTEM_PROMPT,
-        buildResponseUserMessage(ticket, analysis),
-      );
       let response;
       try {
-        response = parseModelJson(responseText);
-      } catch {
-        throw new Error("Could not parse draft response as JSON.");
+        if (analysis.offline) throw Object.assign(new Error("offline"), { offline: true });
+        const responseText = await callClaude("response", { ticket, analysis });
+        try {
+          response = parseModelJson(responseText);
+        } catch {
+          throw new Error("Could not parse draft response as JSON.");
+        }
+      } catch (err) {
+        if (!err.offline && !canDegrade(err)) throw err;
+        response = sampleResponse(ticket, analysis);
       }
       setResponses((prev) => ({ ...prev, [ticketId]: response }));
     } catch (err) {
@@ -150,7 +152,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!HAS_API_KEY) return;
     if (!selectedTicketId) return;
     if (analyses[selectedTicketId]) return;
     if (ticketErrors[selectedTicketId]) return;
@@ -173,12 +174,19 @@ export default function App() {
     });
 
     try {
-      const text = await callClaude(IMPL_SYSTEM_PROMPT, buildImplUserMessage(impl));
       let data;
       try {
-        data = parseModelJson(text);
-      } catch {
-        throw new Error("Could not parse implementation checklist response as JSON.");
+        const record = { ...impl };
+        delete record.aiChecklist;
+        const text = await callClaude("implementation", { implementation: record });
+        try {
+          data = parseModelJson(text);
+        } catch {
+          throw new Error("Could not parse implementation checklist response as JSON.");
+        }
+      } catch (err) {
+        if (!canDegrade(err)) throw err;
+        data = sampleImplementation(impl);
       }
       setImplChecklists((prev) => ({ ...prev, [implId]: data }));
       setImplementations((prev) =>
@@ -328,13 +336,9 @@ export default function App() {
     hoursBaseline,
   };
 
-  if (!HAS_API_KEY) {
-    return <ApiKeyWarning />;
-  }
-
   return (
     <div className="app flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--bg)]">
-      <Topbar onReset={handleReset} />
+      <Topbar onReset={handleReset} aiAvailable={aiAvailable} />
       <div className="body flex min-h-0 flex-1 flex-row overflow-hidden">
         <LeftNav activePage={activePage} setActivePage={setActivePage} badges={navBadges} />
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[var(--bg)]">
@@ -351,7 +355,8 @@ export default function App() {
         </main>
       </div>
       <footer className="shrink-0 border-t border-[var(--border)] bg-[var(--white)] px-4 py-2 text-center font-sans text-[11px] text-[var(--text-muted)]">
-        Demo mode · Powered by Claude Sonnet 4.6 · Togetherwork Support Intelligence Prototype
+        Independent prototype by Rahul Paul · Synthetic demo data · Not affiliated with or endorsed by Togetherwork ·
+        Claude Sonnet 4.6
       </footer>
     </div>
   );

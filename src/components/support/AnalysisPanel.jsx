@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import initialKbArticles from "../../data/knowledgeBase.js";
 import KnowledgeBasePanel from "./KnowledgeBasePanel.jsx";
+import OfflineBadge from "../shared/OfflineBadge.jsx";
 
 function categoryIcon(category) {
   switch (category) {
@@ -54,9 +55,12 @@ export default function AnalysisPanel({ analysis, knowledgeBase = initialKbArtic
 
   return (
     <div className="rounded-md border border-[var(--gray-100)] bg-[var(--white)] p-4">
-      <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-faint)]">
-        Triage analysis
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--text-faint)]">
+          Triage analysis
+        </p>
+        {analysis.offline ? <OfflineBadge /> : null}
+      </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div className="rounded-md bg-[var(--bg)] p-3">

@@ -1,4 +1,6 @@
-export default function Topbar({ onReset }) {
+export default function Topbar({ onReset, aiAvailable }) {
+  // aiAvailable: null while the server status is loading, false when no AI key is configured.
+  const ai = aiAvailable === false ? "offline" : aiAvailable ? "live" : "checking";
   return (
     <header
       className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--border)] px-4"
@@ -13,17 +15,19 @@ export default function Topbar({ onReset }) {
           TW
         </div>
         <span className="font-sans text-sm font-medium text-[var(--white)]">
-          Operations Intelligence · Togetherwork
+          Operations Intelligence · Prototype
         </span>
       </div>
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" data-ai-status={ai}>
           <span
-            className="tw-live-dot h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--green)]"
+            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+              ai === "live" ? "tw-live-dot bg-[var(--green)]" : ai === "offline" ? "bg-[var(--amber)]" : "bg-[var(--gray)]"
+            }`}
             aria-hidden
           />
           <span className="font-mono text-[11px] text-[var(--text-faint)]">
-            Claude Sonnet 4.6 · Live
+            {ai === "live" ? "Claude Sonnet 4.6 · Live" : ai === "offline" ? "AI offline · sample mode" : "Checking AI…"}
           </span>
         </div>
         <button

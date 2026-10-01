@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed:tickets": "node scripts/seed-mock-tickets.mjs"
+    "seed:tickets": "node scripts/seed-mock-tickets.mjs",
+    "test:proxy": "node --test scripts/test-claude-proxy.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",
